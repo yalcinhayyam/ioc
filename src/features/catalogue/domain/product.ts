@@ -4,27 +4,27 @@ import {
   IEntity,
   IRoot,
 } from "../../../core/entity";
-import { OptionId } from "./data/option-id";
+import { ProductOptionId } from "./data/product-option-id";
 import { ProductId } from "./data/product-id";
-import { Option } from "./entity/option";
+import { ProductOption } from "./entity/product-option";
 import { IMoney } from "./data/price";
 
-export interface IProduct extends ICreateOnlyEntity, IEntity<ProductId> {
+interface IProduct extends ICreateOnlyEntity, IEntity<ProductId> {
   readonly isDraft: boolean;
   readonly title: string;
   readonly options:
-    | readonly Readonly<Option>[]
-    | ReadonlyArray<Readonly<Option>>;
+    | readonly Readonly<ProductOption>[]
+    | ReadonlyArray<Readonly<ProductOption>>;
 }
 
-interface IProductRoot extends IRoot<IProduct> {
+export interface IProductRoot extends IRoot<IProduct> {
   addOption(key: string, price: IMoney): void;
-  removeOption(optionId: OptionId, permanently: boolean): void;
-  changeOptionKey(optionId: OptionId, newKey: string): void;
-  changeOptionPrice(optionId: OptionId, value: IMoney): void;
+  removeOption(optionId: ProductOptionId, permanently: boolean): void;
+  changeOptionKey(optionId: ProductOptionId, newKey: string): void;
+  changeOptionPrice(optionId: ProductOptionId, value: IMoney): void;
 }
 
-class Product
+export class Product
   extends Entity<ProductId>
   implements IProductRoot, IEntity<ProductId>
 {
@@ -34,36 +34,36 @@ class Product
     public readonly title: string,
     public isDraft: boolean,
     isActive: boolean,
-    public readonly options: Option[]
+    public readonly options: ProductOption[]
   ) {
     super(id, createdAt, isActive);
   }
-  changeOptionPrice(optionId: OptionId, value: IMoney): void {
+  changeOptionPrice(optionId: ProductOptionId, value: IMoney): void {
     const option = this._getOption(optionId);
     this.removeOption(optionId, false);
     this.addOption(option.key, value);
   }
 
-  static retrieve(model: IProduct): IProductRoot | Readonly<IProductRoot> {
-    return new Product(
-      model.id,
-      model.createdAt,
-      model.title,
-      model.isDraft,
-      model.isActive,
-      [...model.options]
-    );
-  }
+  // static retrieve(model: IProduct): IProductRoot | Readonly<IProductRoot> {
+  //   return new Product(
+  //     model.id,
+  //     model.createdAt,
+  //     model.title,
+  //     model.isDraft,
+  //     model.isActive,
+  //     [...model.options]
+  //   );
+  // }
 
   static create(title: string): IProductRoot | Readonly<IProductRoot> {
     return new Product(ProductId.create(), new Date(), title, true, false, []);
   }
 
   addOption(key: string, price: IMoney): void {
-    this.options.push(Option.create(key, price));
+    this.options.push(ProductOption.create(key, price));
   }
 
-  private _getOption(optionId: OptionId): Option {
+  private _getOption(optionId: ProductOptionId): ProductOption {
     const option = this.options.find((option) => option.id.compare(optionId));
     if (!option) {
       throw new Error(`Option not found with id ${optionId}`);
@@ -71,7 +71,7 @@ class Product
 
     return option;
   }
-  removeOption(id: OptionId, permanently: boolean): void {
+  removeOption(id: ProductOptionId, permanently: boolean): void {
     const option = this._getOption(id);
 
     if (permanently) {
@@ -82,7 +82,7 @@ class Product
     option.disable();
     option.isActive = false;
   }
-  changeOptionKey(optionId: OptionId, newKey: string) {
+  changeOptionKey(optionId: ProductOptionId, newKey: string) {
     const option = this._getOption(optionId);
     this.removeOption(optionId, false);
     this.addOption(newKey, option.price);

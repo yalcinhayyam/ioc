@@ -12,88 +12,142 @@ datasource db {
 }
 
 model Category {
-  id        String   @id @default(uuid())
+  // Root - Ok - refernce productId[]
+  id        String    @id @default(uuid())
   name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  products Product[]
-}
-
-model User {
-  id        String   @id @default(uuid())
-  username  String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  comments Comment[]
-  Order    Order[]
-}
-
-model Product {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  price       Float
-  stock       Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
-
-  lineItems  LineItem[]
-  productTag TagProduct[]
-}
-
-model Order {
-  id        String   @id @default(uuid())
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user      User       @relation(fields: [userId], references: [id])
-  lineItems LineItem[]
-}
-
-model LineItem {
-  id        String   @id @default(uuid())
-  orderId   String
-  productId String
-  quantity  Int
-  total     Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  order   Order   @relation(fields: [orderId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
-}
-
-model Comment {
-  id        String   @id @default(uuid())
-  text      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
 }
 
 model Tag {
+  // Root - Ok - refernce ProductTagId[]
+  id        String       @id @default(uuid())
+  name      String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  isActive  Boolean
+  products  ProductTag[]
+}
+
+model User {
+  // Root - Ok - refernce orderId[], commentId[] 
+  id        String    @id @default(uuid())
+  username  String
+  email     String    @unique
+  hash      Bytes
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  orders    Order[]
+  comments  Comment[]
+}
+
+model Product {
+  // Root - Ok - refernce categoryId[], productTagId[], opttionId[] 
+  id            String          @id @default(uuid())
+  name          String
+  description   String?
+  images        Media[]
+  isDraft       Boolean
+  isActive      Boolean
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  categories    Category[]
+  productTags   ProductTag[]
+  productOption ProductOption[]
+}
+
+model Media {
   id        String   @id @default(uuid())
-  name      String   @unique
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+}
+
+model Order {
+  // Root - Ok - refernce userId, lineItemId[] 
+  id            String      @id @default(uuid())
+  productId     String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  status        OrderStatus @relation(fields: [orderStatusId], references: [id])
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  lineItems     LineItem[]
+  orderStatusId String
+}
+
+model Comment {
+  // Entity - Ok - refernce orderId[], commentId[] 
+
+  id          String   @id @default(uuid())
+  stars       Int
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isActive    Boolean
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+}
+
+model LineItem {
+  // Entity - Ok - refernce orderId[], commentId[] 
+  id        String   @id @default(uuid())
+  quantity  Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tagProducts TagProduct[]
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  productOptionId String
+  productOption   ProductOption @relation(fields: [productOptionId], references: [id])
 }
 
-model TagProduct {
-  id        String  @id @default(uuid())
-  tagId     String  @unique
-  productId String  @unique
-  tag       Tag     @relation(fields: [tagId], references: [id])
-  product   Product @relation(fields: [productId], references: [id])
+model ProductTag {
+  // Entity - Ok - refernce productId, tagId
+
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  tagId     String
+  tag       Tag      @relation(fields: [tagId], references: [id])
+}
+
+model ProductOption {
+  // Entity - Ok - refernce productId, lineItemId[] 
+
+  id        String     @id @default(uuid())
+  price     Float
+  stock     Int
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  productId String
+  product   Product    @relation(fields: [productId], references: [id])
+  lineItem  LineItem[]
+}
+
+// model Discount {
+//     id         String           @id @default(uuid()) 
+//     createdAt  DateTime         @default(now())
+//     updatedAt  DateTime         @updatedAt
+//     value      Decimal
+//     isPercent  Boolean
+//     code       String?
+//     strategy   DiscountStrategy @relation(fields: [strategyId], references: [id])
+//     strategyId String           
+// }
+
+// model DiscountStrategy {
+//     id          String     @id @default(uuid()) 
+//     name        String
+//     description String?
+//     discount    Discount[]
+// }
+
+model OrderStatus {
+  id    String  @id @default(uuid())
+  name  String
+  Order Order[]
 }

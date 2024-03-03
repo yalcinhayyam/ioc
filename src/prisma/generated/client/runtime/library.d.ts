@@ -830,7 +830,7 @@ export declare namespace DMMF {
         delete = "delete",
         deleteMany = "deleteMany",
         groupBy = "groupBy",
-        count = "count",// PRODUCT: count does not actually exist, why?
+        count = "count",// TODO: count does not actually exist, why?
         aggregate = "aggregate",
         findRaw = "findRaw",
         aggregateRaw = "aggregateRaw"
@@ -2426,9 +2426,9 @@ declare type QueryMiddlewareParams = {
     model?: string;
     /** The action that is being handled */
     action: Action;
-    /** PRODUCT what is this */
+    /** TODO what is this */
     dataPath: string[];
-    /** PRODUCT what is this */
+    /** TODO what is this */
     runInTransaction: boolean;
     args?: UserArgs_2;
 };

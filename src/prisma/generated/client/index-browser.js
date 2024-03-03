@@ -104,10 +104,93 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.CategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TagScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  isActive: 'isActive'
+};
+
+exports.Prisma.UserScalarFieldEnum = {
+  id: 'id',
+  username: 'username',
+  email: 'email',
+  hash: 'hash',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.ProductScalarFieldEnum = {
   id: 'id',
-  title: 'title',
-  complete: 'complete'
+  name: 'name',
+  description: 'description',
+  isDraft: 'isDraft',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.MediaScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId'
+};
+
+exports.Prisma.OrderScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId',
+  orderStatusId: 'orderStatusId'
+};
+
+exports.Prisma.CommentScalarFieldEnum = {
+  id: 'id',
+  stars: 'stars',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  isActive: 'isActive',
+  userId: 'userId'
+};
+
+exports.Prisma.LineItemScalarFieldEnum = {
+  id: 'id',
+  quantity: 'quantity',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  orderId: 'orderId',
+  productOptionId: 'productOptionId'
+};
+
+exports.Prisma.ProductTagScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  productId: 'productId',
+  tagId: 'tagId'
+};
+
+exports.Prisma.ProductOptionScalarFieldEnum = {
+  id: 'id',
+  price: 'price',
+  stock: 'stock',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  productId: 'productId'
+};
+
+exports.Prisma.OrderStatusScalarFieldEnum = {
+  id: 'id',
+  name: 'name'
 };
 
 exports.Prisma.SortOrder = {
@@ -115,9 +198,24 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 
 exports.Prisma.ModelName = {
-  Product: 'Product'
+  Category: 'Category',
+  Tag: 'Tag',
+  User: 'User',
+  Product: 'Product',
+  Media: 'Media',
+  Order: 'Order',
+  Comment: 'Comment',
+  LineItem: 'LineItem',
+  ProductTag: 'ProductTag',
+  ProductOption: 'ProductOption',
+  OrderStatus: 'OrderStatus'
 };
 
 /**
