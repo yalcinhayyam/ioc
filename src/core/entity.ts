@@ -19,10 +19,10 @@ export abstract class AbstractId<T, H extends string> extends UniqueType<H> {
   }
 }
 
-export abstract class Entity<TId extends AbstractId<unknown, any>> implements ICreateOnlyEntity, IEntity<TId> {
+export abstract class Entity<TId extends AbstractId<unknown, any>> implements Omit<ICreateOnlyEntity,'createdAt'>, IEntity<TId> {
   constructor(
     public readonly id: TId,
-    public readonly createdAt: Date,
+    // public readonly createdAt: Date,
     public isActive: boolean
   ) {}
   disable(): void {

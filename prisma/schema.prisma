@@ -22,12 +22,12 @@ model Category {
 
 model Tag {
   // Root - Ok - refernce ProductTagId[]
-  id        String       @id @default(uuid())
-  name      String
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  isActive  Boolean
-  products  ProductTag[]
+  id          String       @id @default(uuid())
+  name        String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  isActive    Boolean
+  productTags ProductTag[]
 }
 
 model User {
@@ -43,28 +43,31 @@ model User {
 }
 
 model Product {
-  // Root - Ok - refernce categoryId[], productTagId[], opttionId[] 
-  id            String          @id @default(uuid())
-  name          String
-  description   String?
-  images        Media[]
-  isDraft       Boolean
-  isActive      Boolean
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  categories    Category[]
-  productTags   ProductTag[]
-  productOption ProductOption[]
+  // Root - Ok - refernce categoryId[], productTagId[], opttion[],
+  id          String          @id @default(uuid())
+  name        String
+  description String?
+  images      Media[]
+  isDraft     Boolean
+  isActive    Boolean
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  categories  Category[]
+  productTags ProductTag[]
+  options     ProductOption[]
+  commnets    Comment[]
 }
 
 model Media {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
+  src       String
+  type      String
   product   Product @relation(fields: [productId], references: [id])
   productId String
 }
 
 model Order {
-  // Root - Ok - refernce userId, lineItemId[] 
+  // Root - Ok - refernce userId, lineItem[] 
   id            String      @id @default(uuid())
   productId     String
   createdAt     DateTime    @default(now())
@@ -77,7 +80,7 @@ model Order {
 }
 
 model Comment {
-  // Entity - Ok - refernce orderId[], commentId[] 
+  // Entity - Ok - refernce 
 
   id          String   @id @default(uuid())
   stars       Int
@@ -87,6 +90,8 @@ model Comment {
   isActive    Boolean
   user        User     @relation(fields: [userId], references: [id])
   userId      String
+  product     Product? @relation(fields: [productId], references: [id])
+  productId   String?
 }
 
 model LineItem {
@@ -99,8 +104,8 @@ model LineItem {
   orderId String
   order   Order  @relation(fields: [orderId], references: [id])
 
-  productOptionId String
-  productOption   ProductOption @relation(fields: [productOptionId], references: [id])
+  optionId String
+  option   ProductOption @relation(fields: [optionId], references: [id])
 }
 
 model ProductTag {
@@ -120,12 +125,13 @@ model ProductOption {
 
   id        String     @id @default(uuid())
   price     Float
+  code      String
   stock     Int
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   productId String
   product   Product    @relation(fields: [productId], references: [id])
-  lineItem  LineItem[]
+  lineItems LineItem[]
 }
 
 // model Discount {

@@ -1,12 +1,21 @@
 import { IUseCase } from "../../../../core/types";
-import { IProductRepository } from "../repositories/product";
+import { Prisma, PrismaClient } from "../../../../prisma/generated/client";
+import { IProductQuery } from "../../domain/product";
 
+export type GetProductsParams =
+  Prisma.TypeMap["model"]["Product"]["operations"]["findMany"]["args"];
+export type GetProductsResult = IProductQuery;
 
-export class GetProductItems implements IUseCase<any[], void> {
-  constructor(private readonly productRepository: IProductRepository) {}
-  handle(args: void): Promise<any[]> {
-    return Promise.resolve(this.productRepository.get());
+export class GetProducts
+  implements IUseCase<GetProductsResult[], GetProductsParams>
+{
+  constructor(private readonly client: PrismaClient) {}
+  async handle(args: GetProductsParams): Promise<GetProductsResult[]> {
+    console.log(args)
+
+    return await this.client.product.findMany({
+      ...args,
+      // where: { ...args.where, isActive: true },
+    });
   }
 }
-
-

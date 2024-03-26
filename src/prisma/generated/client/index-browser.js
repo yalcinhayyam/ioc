@@ -140,6 +140,8 @@ exports.Prisma.ProductScalarFieldEnum = {
 
 exports.Prisma.MediaScalarFieldEnum = {
   id: 'id',
+  src: 'src',
+  type: 'type',
   productId: 'productId'
 };
 
@@ -168,7 +170,7 @@ exports.Prisma.LineItemScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   orderId: 'orderId',
-  productOptionId: 'productOptionId'
+  optionId: 'optionId'
 };
 
 exports.Prisma.ProductTagScalarFieldEnum = {
@@ -182,6 +184,7 @@ exports.Prisma.ProductTagScalarFieldEnum = {
 exports.Prisma.ProductOptionScalarFieldEnum = {
   id: 'id',
   price: 'price',
+  code: 'code',
   stock: 'stock',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',

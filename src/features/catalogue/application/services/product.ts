@@ -1,3 +1,1 @@
-export interface IProductService {
-  list(): any[];
-}
+export interface IProductService {}

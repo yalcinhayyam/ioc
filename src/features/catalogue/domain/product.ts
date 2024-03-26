@@ -1,23 +1,30 @@
-import {
-  Entity,
-  ICreateOnlyEntity,
-  IEntity,
-  IRoot,
-} from "../../../core/entity";
+import { Entity, IEntity, IRoot } from "../../../core/entity";
 import { ProductOptionId } from "./data/product-option-id";
 import { ProductId } from "./data/product-id";
 import { ProductOption } from "./entity/product-option";
 import { IMoney } from "./data/price";
+import { Prisma } from "../../../prisma/generated/client";
+import {
+  PayloadToResult,
+  DefaultArgs,
+  RenameAndNestPayloadKeys,
+} from "../../../prisma/generated/client/runtime/library";
+import { PrismaTypeMap, EntityType } from "../../../core/types";
 
-interface IProduct extends ICreateOnlyEntity, IEntity<ProductId> {
-  readonly isDraft: boolean;
-  readonly title: string;
-  readonly options:
+export type IProductQuery = PrismaTypeMap<"Product">
+
+// ICreateOnlyEntity,
+// IEntity<ProductId>,
+
+export interface IProduct
+  extends EntityType<IProductQuery, ProductId, "createdAt" | "updatedAt"> {
+  readonly productOptions:
     | readonly Readonly<ProductOption>[]
     | ReadonlyArray<Readonly<ProductOption>>;
 }
 
-export interface IProductRoot extends IRoot<IProduct> {
+export interface IProductRoot
+  extends IRoot<Omit<IProduct, "createdAt" | "updatedAt">> {
   addOption(key: string, price: IMoney): void;
   removeOption(optionId: ProductOptionId, permanently: boolean): void;
   changeOptionKey(optionId: ProductOptionId, newKey: string): void;
@@ -30,14 +37,33 @@ export class Product
 {
   private constructor(
     id: ProductId,
-    createdAt: Date,
-    public readonly title: string,
+    public readonly name: string,
+    public description: string | null,
     public isDraft: boolean,
+    public productOptions: ProductOption[],
     isActive: boolean,
-    public readonly options: ProductOption[]
+    public images: Media[]
   ) {
-    super(id, createdAt, isActive);
+    super(id, isActive);
   }
+  categories: DeepReadonlyArray<
+    PayloadToResult<
+      Prisma.$CategoryPayload<DefaultArgs>,
+      RenameAndNestPayloadKeys<Prisma.$CategoryPayload<DefaultArgs>>
+    >
+  >;
+  productTags: DeepReadonlyArray<
+    PayloadToResult<
+      Prisma.$ProductTagPayload<DefaultArgs>,
+      RenameAndNestPayloadKeys<Prisma.$ProductTagPayload<DefaultArgs>>
+    >
+  >;
+  productOption: DeepReadonlyArray<
+    PayloadToResult<
+      Prisma.$ProductOptionPayload<DefaultArgs>,
+      RenameAndNestPayloadKeys<Prisma.$ProductOptionPayload<DefaultArgs>>
+    >
+  >;
   changeOptionPrice(optionId: ProductOptionId, value: IMoney): void {
     const option = this._getOption(optionId);
     this.removeOption(optionId, false);
@@ -51,20 +77,23 @@ export class Product
   //     model.title,
   //     model.isDraft,
   //     model.isActive,
-  //     [...model.options]
+  //     [...model.productOptions]
   //   );
   // }
 
   static create(title: string): IProductRoot | Readonly<IProductRoot> {
-    return new Product(ProductId.create(), new Date(), title, true, false, []);
+    return {} as any;
+    // return new Product(ProductId.create(), new Date(), title, true, false, []) as any;
   }
 
   addOption(key: string, price: IMoney): void {
-    this.options.push(ProductOption.create(key, price));
+    this.productOptions.push(ProductOption.create(key, price));
   }
 
   private _getOption(optionId: ProductOptionId): ProductOption {
-    const option = this.options.find((option) => option.id.compare(optionId));
+    const option = this.productOptions.find((option) =>
+      option.id.compare(optionId)
+    );
     if (!option) {
       throw new Error(`Option not found with id ${optionId}`);
     }
@@ -75,8 +104,8 @@ export class Product
     const option = this._getOption(id);
 
     if (permanently) {
-      const optionIndex = this.options.findIndex((o) => o.id == id);
-      this.options.splice(optionIndex, 1);
+      const optionIndex = this.productOptions.findIndex((o) => o.id == id);
+      this.productOptions.splice(optionIndex, 1);
       return;
     }
     option.disable();
@@ -89,8 +118,19 @@ export class Product
   }
 }
 
+// export interface ICategory extends ChangeIdType<PrismaCategory, CategoryId> {
+//   readonly productIdentifiers: ProductId[];
+// }
+// export interface ITag extends ChangeIdType<PrismaTag, TagId> {}
+// export interface IUser extends ChangeIdType<PrismaUser, UserId> {}
+// export interface IOrder extends ChangeIdType<PrismaOrder, OrderId> {}
+// export interface ILineItem extends ChangeIdType<PrismaLineItem, LineItemId> {}
+// const p: DeepReadonly<RecursiveRequired<ChangeIdType<IProductBase,ProductId>>> ={ //RootType<IProductBase,ProductId,"createdAt" | "updatedAt"> = {
+
+// }
+
 // function removeProduct (){
-//     if(Product.isDraft && !Orders.any(product.options)) delete
+//     if(Product.isDraft && !Orders.any(product.productOptions)) delete
 
 //     else disable product then create new croduct same data
 // }

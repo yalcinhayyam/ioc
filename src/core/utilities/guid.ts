@@ -4,6 +4,9 @@ export class Guid {
     static generate() {
       return new Guid(v4());
     }
+    static from(token: string) {
+      return new Guid(token);
+    }
     static hydrate(guid: Guid) {
       return new Guid(guid.token);
     }
